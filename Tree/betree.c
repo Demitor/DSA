@@ -96,8 +96,6 @@ static treeref create_node(int v)
 	set_LC(new, NULLREF);
 	set_height(new, NULLREF);
 
-	pnew = new;
-
 	return new; }
 
 /****************************************************************************/
@@ -127,7 +125,9 @@ static treeref RC(treeref T)               { /* TO DO */ return NULL; }
 /* CONStruct a new tree from a LC, Node and RC                              */
 /****************************************************************************/
 
-static treeref cons(treeref LC, treeref N, treeref RC) {/* TO DO */ return NULL; }
+static treeref cons(treeref LC, treeref N, treeref RC) {
+	set_RC(N, RC);
+	set_LC(N, LC); return N; }
 
 /****************************************************************************/
 /* FIND the height of the tree                                              */
@@ -231,7 +231,77 @@ static treeref b_add(treeref T, treeref N)
 /* REMove an element from the tree / BST order                              */
 /****************************************************************************/
 
-static treeref b_rem(treeref T, int v) { /* TO DO */ return NULL; }
+static treeref b_rem(treeref T, int v) 
+{
+	
+	if(is_empty(T))	return NULL; 
+	if(v == get_value(T))
+	{	
+		if(pnew != NULLREF)
+			{
+				if(v<pnew)
+				{
+					if(get_RC(T) != NULLREF && get_LC(get_RC(T)) != NULLREF)
+					{
+						treeref i = get_RC(T);
+						while(get_LC(i) != NULLREF)
+						{
+							i = get_LC(i);
+						}
+						set_LC(i, get_LC(T));
+						set_LC(pnew, get_RC(T));
+					}
+					else
+						if(get_LC(T) != NULLREF)
+						{
+							set_LC(pnew, get_LC(T));
+						}
+						else	set_LC(pnew, NULLREF);					
+				}
+				else 
+					if(get_RC(T) != NULLREF && get_LC(get_RC(T)) != NULLREF)
+					{
+						treeref i = get_RC(T);
+						while(get_LC(i) != NULLREF)
+						{
+							i = get_LC(i);
+						}
+						set_LC(i, get_LC(T));
+						set_LC(pnew, get_RC(T));
+					}
+					else
+						if(get_LC(T) != NULLREF)
+						{
+							set_LC(pnew, get_LC(T));
+						}
+						else	set_LC(pnew, NULLREF);
+					set_RC(pnew, get_RC(T));	
+				pnew = NULLREF;
+			}
+		else
+		{
+			
+			if(get_LC(get_RC(T)) != NULLREF)
+			{
+				treeref i = get_RC(T);
+				while(get_LC(i) != NULLREF)
+				{
+					i = get_LC(i);
+				}
+
+				set_LC(i, get_LC(T));
+			}
+			else
+			{
+				set_LC(get_RC(T), get_LC(T));
+			}
+			pnew = NULLREF;
+
+		}
+	}
+	if(v < get_value(T)){	pnew = T;	return b_rem(get_LC(T), v);	}
+	if(v > get_value(T)){	pnew = T;	return b_rem(get_RC(T), v);	}
+}
 
 /****************************************************************************/
 /* Build heap tree                                                          */
@@ -256,10 +326,18 @@ static treeref b_remh(int v) { /* TO DO */ return NULL; }
 /****************************************************************************/
 
 static int b_findb(treeref T, int v) {
-	if(T==V){
+	
+	return 	is_empty(T)			?	NULL
+		:	get_value(T)==v 	?	T
+		:	get_value(T)<v 		?	b_find(get_RC(T), v)
+		:							b_find(get_LC(T), v)
+
+
+
+	/*if(T==V){
 	printf("Node [%d] found, on height: %d.",v ,get_height(T));
 }else{
-	if (T =< v)
+	if (T < v)
 	{
 		if (get_RC(T) != NULLREF)
 		{
@@ -284,7 +362,7 @@ static int b_findb(treeref T, int v) {
 
 	}
 	
- return 0; }
+ return 0;*/ }
 
 /****************************************************************************/
 /* FIND an element in the complete tree                                     */
