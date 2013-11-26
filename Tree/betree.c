@@ -272,10 +272,10 @@ static treeref b_rem(treeref T, int v)
 					else
 						if(get_LC(T) != NULLREF)
 						{
-							set_LC(pnew, get_LC(T));
+							set_RC(pnew, get_RC(T));
 						}
-						else	set_LC(pnew, NULLREF);
-					set_RC(pnew, get_RC(T));	
+						else	set_RC(pnew, NULLREF);
+						
 				pnew = NULLREF;
 			}
 		else
