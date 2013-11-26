@@ -255,11 +255,11 @@ static treeref b_remh(int v) { /* TO DO */ return NULL; }
 /* FIND an element in the BST (Binary Search Tree)                          */
 /****************************************************************************/
 
-static int b_findb(treeref T, int v) { 
+static int b_findb(treeref T, int v) {
 	if(T==V){
 	printf("Node [%d] found, on height: %d.",v ,get_height(T));
 }else{
-	if (T < v)
+	if (T =< v)
 	{
 		if (get_RC(T) != NULLREF)
 		{
@@ -270,7 +270,7 @@ static int b_findb(treeref T, int v) {
 			printf("Node not found\n");
 		}
 	}
-	if (T => v)
+	if (T > v)
 	{
 		if (get_LC(T) != NULLREF)
 		{
