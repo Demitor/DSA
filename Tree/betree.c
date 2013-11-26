@@ -94,11 +94,11 @@ static treeref create_node(int v)
 	set_value(new, v);
 	set_RC(new, NULLREF);
 	set_LC(new, NULLREF);
-	set_height(new, NULLREF)
+	set_height(new, NULLREF);
 
 	pnew = new;
 
-	return NULL; }
+	return new; }
 
 /****************************************************************************/
 /****************************************************************************/
@@ -255,7 +255,36 @@ static treeref b_remh(int v) { /* TO DO */ return NULL; }
 /* FIND an element in the BST (Binary Search Tree)                          */
 /****************************************************************************/
 
-static int b_findb(treeref T, int v) { /* TO DO */ return 0; }
+static int b_findb(treeref T, int v) { 
+	if(T==V){
+	printf("Node [%d] found, on height: %d.",v ,get_height(T));
+}else{
+	if (T < v)
+	{
+		if (get_RC(T) != NULLREF)
+		{
+			T = get_RC(T);
+			b_findb(T, v);
+		}
+		else{
+			printf("Node not found\n");
+		}
+	}
+	if (T => v)
+	{
+		if (get_LC(T) != NULLREF)
+		{
+			T = get_LC(T);
+			b_findb(T, v);
+		}
+		else{
+			printf("Node not found\n");
+		}
+	}
+
+	}
+	
+ return 0; }
 
 /****************************************************************************/
 /* FIND an element in the complete tree                                     */
