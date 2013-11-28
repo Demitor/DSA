@@ -160,7 +160,25 @@ static void b_disp_array() { /* TO DO */ }
 /* becomes: [5] [2] [7] [nil] [3] [6] [nil]                                 */
 /****************************************************************************/
 
-static void T2Q() { /* TO DO */ }
+static void T2Q() 
+{
+	int i = 0, current = 0;
+	queue[i] = T;
+	i++;
+
+	while(!queue[i] != NULLREF)
+	{
+		queue[i] = get_LC(queue[current]);
+		i++;
+
+		queue[i] = get_RC(queue[current]);
+		i++;
+
+		current++;
+	}
+	while(queue[j] != NULLREF)
+	printf("");
+}
 
 /****************************************************************************/
 /* display the tree in 2D                                                   */
