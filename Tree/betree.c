@@ -72,17 +72,17 @@ static treeref queue[ARRLEN];
 /* create_node:     int           --> treeref                               */
 /****************************************************************************/
 
-static int      is_empty(treeref T)             { return T == NULLREF; }
+static int      is_empty(treeref T)             { return T == (treeref) NULLREF; }
 
-static int      get_value(treeref T)            { return (*T).value; }
-static int      get_height(treeref T)           { return (*T).height; }
-static treeref  get_LC(treeref T)               { return (*T).LC; }
-static treeref  get_RC(treeref T)               { return (*T).RC; }
+static int      get_value(treeref T)            { return T->value; }
+static int      get_height(treeref T)           { return T->height; }
+static treeref  get_LC(treeref T)               { return T->LC; }
+static treeref  get_RC(treeref T)               { return T->RC; }
 
-static treeref  set_value(treeref T, int v)     { (*T).value = v; return T; }
-static treeref  set_height(treeref T, int h)    { (*T).height = h; return T; }
-static treeref  set_LC(treeref T, treeref L)    { (*T).LC = L; return T; }
-static treeref  set_RC(treeref T, treeref R)    { (*T).RC = R; return T; }
+static treeref  set_value(treeref T, int v)     { T->value = v; return T; }
+static treeref  set_height(treeref T, int h)    { T->height = h; return T; }
+static treeref  set_LC(treeref T, treeref L)    { T->LC = L; return T; }
+static treeref  set_RC(treeref T, treeref R)    { T->RC = R; return T; }
 
 /****************************************************************************/
 /* create and initialise an element in the tree                             */
@@ -95,6 +95,8 @@ static treeref create_node(int v)
 	set_RC(new, NULLREF);
 	set_LC(new, NULLREF);
 	set_height(new, NULLREF);
+
+	if(is_empty(T)) T = new;
 
 	return new; }
 
@@ -133,15 +135,24 @@ static treeref cons(treeref LC, treeref N, treeref RC) {
 /* FIND the height of the tree                                              */
 /****************************************************************************/
 
-static int max(int a, int b) { /* TO DO */ return 0; }
+//static int max(int a, int b) { /* TO DO */ return 0; }
 
-static int b_height(treeref T) { return 0; /* TO DO */ return 0; }
+static int b_height(treeref T) 
+{
+	if (is_empty(T)) return 0;
+	int L_height = maxHeight(get_LC(T));
+  	int R_height = maxHeight(get_RC(T));
+  	return (L_height > R_height) ? L_height + 1 : R_height + 1;
+}
 
 /****************************************************************************/
 /* display the tree ELEMENT                                                 */
 /****************************************************************************/
 
-static void b_disp_el(treeref T) { /* TO DO */ }
+static void b_disp_el(treeref T) { 
+	if(!is_empty(T))	printf("[%d]\n", get_value(T));
+	else				printf("[nil]\n"); 
+}
 
 /****************************************************************************/
 /* display the heap array                                                   */
@@ -160,14 +171,21 @@ static void b_disp_array() { /* TO DO */ }
 /* becomes: [5] [2] [7] [nil] [3] [6] [nil]                                 */
 /****************************************************************************/
 
-static void T2Q() 
+static void T2Q(Treeref T, int i) 
 {
-	int i = 0, current = 0;
+	if(!is_empty(T))
+	{
+		queue[i] = get_value(T);
+		T2Q(get_LC(T), (i*2));
+		T2Q(get_RC(T), ((i*2)+1));
+	}
+	/*int i = 0, current = 0, j = 0;
 	queue[i] = T;
 	i++;
 
 	while(!queue[i] != NULLREF)
 	{
+		if(get_LC(queue[current]) == NULLREF)
 		queue[i] = get_LC(queue[current]);
 		i++;
 
@@ -177,7 +195,10 @@ static void T2Q()
 		current++;
 	}
 	while(queue[j] != NULLREF)
-	printf("");
+	{
+		printf("[%d] ", get_value(queue[j]));
+		j++;
+	}*/
 }
 
 /****************************************************************************/
@@ -192,7 +213,36 @@ static void T2Q()
 /* level 3 (4 nodes)             [nil]     [3]    [6]     [nil]             */
 /****************************************************************************/
 
-static void b_disp_2D() { /* TO DO */ }
+static void b_disp_2D() 
+{
+	T2Q(T, 1);
+	int i = 1, j, temp = 2, bs = (2^(b_height(T)-1), b, k = 0;
+	while(k < b_height(T)) // Så länge som det inte är slut på kön
+	{
+		if(temp == 2) // Skriver ut roten
+		{ 
+			for(j=0;j<bs;j++){ printf("\t"); }
+			printf("[%d]\n", queue[i])); i++; 
+			b = bs;
+		}
+		if(temp != 2) // Skriver ut första värdet på raden
+		{
+			b =	b/2;
+			for(j=0;j<b;j++) { printf("\t"); }
+			printf("[%d]", queue[i]); i++; 
+		}
+		while(i < temp)	// Skriver ut resterande värden på raden
+		{ 
+			b = (b + (bs/temp));
+			for(j=0;j<b;j++) { printf("\t"); }
+			printf("[%d]", queue[i]); i++; 
+		}
+		printf("\n");
+		temp = temp*2;
+		k++;
+	}
+	
+}
 
 /****************************************************************************/
 /* display the tree (pre-order)                                             */
@@ -219,19 +269,19 @@ static treeref b_add(treeref T, treeref N)
 {
 	if(is_empty(T)){ return create_node(N) }
 	
-	else if(N > get_value(T) && get_RC(T) != NULLREF)
+	else if(get_value(N) > get_value(T) && get_RC(T) != NULLREF)
 	{
 		T = get_RC(T);
 		b_add(T,N);
 	}
-	else if(N <= get_value(T) && get_LC(T) != NULLREF)
+	else if(get_value(N) <= get_value(T) && get_LC(T) != NULLREF)
 	{
 		T = get_LC(T);
 		b_add(T,N);
 	}
 	else
 	{
-		if(N <= get_value(T))
+		if(get_value(N) <= get_value(T))
 		{
 			set_LC(T,N);
 		}
@@ -298,7 +348,7 @@ static treeref b_rem(treeref T, int v)
 			}
 		else
 		{
-			
+			T = get_RC(T);
 			if(get_LC(get_RC(T)) != NULLREF)
 			{
 				treeref i = get_RC(T);
