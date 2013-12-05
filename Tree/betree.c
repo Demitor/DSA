@@ -51,7 +51,6 @@ static int qfirst=NILL, qlast=NILL;
 static treeref heaparr[ARRLEN];
 static int queue[ARRLEN];
 
-
 /****************************************************************************/
 /****************************************************************************/
 /* private operations on the tree - primitive operationa                    */
@@ -96,11 +95,8 @@ static treeref create_node(int v)
 	set_LC(new, NULLREF);
 	set_height(new, NULLREF);
 
-	//if(is_empty(T)) T = new;
-
-	//printf("value:%d, LC%d, RC:%d, height:%d", get_value(T), get_LC(T), get_RC(T), get_height(T));
-
-	return new; }
+	return new; 
+}
 
 /****************************************************************************/
 /****************************************************************************/
@@ -173,6 +169,12 @@ static void b_disp_array() { printf("%d\n", get_value(T)); }
 /* becomes: [5] [2] [7] [nil] [3] [6] [nil]                                 */
 /****************************************************************************/
 
+static void tompengpung()
+{
+	int i;
+	for(i=0;i<ARRLEN;i++){ queue[i] = 0; }
+}
+
 static void T2Q(treeref T, int i) 
 {
 	if(!is_empty(T))
@@ -181,26 +183,6 @@ static void T2Q(treeref T, int i)
 		T2Q(get_LC(T), (i*2));
 		T2Q(get_RC(T), ((i*2)+1));
 	}
-	/*int i = 0, current = 0, j = 0;
-	queue[i] = T;
-	i++;
-
-	while(!queue[i] != NULLREF)
-	{
-		if(get_LC(queue[current]) == NULLREF)
-		queue[i] = get_LC(queue[current]);
-		i++;
-
-		queue[i] = get_RC(queue[current]);
-		i++;
-
-		current++;
-	}
-	while(queue[j] != NULLREF)
-	{
-		printf("[%d] ", get_value(queue[j]));
-		j++;
-	}*/
 }
 
 /****************************************************************************/
@@ -217,6 +199,7 @@ static void T2Q(treeref T, int i)
 
 static void b_disp_2D() 
 {
+	tompengpung();
 	T2Q(T, 1);
 
 	int i = 1, j, temp = 2, bs = (int) pow((double)2,(double)(b_height(T)-1)), b, k = 0;
@@ -233,34 +216,35 @@ static void b_disp_2D()
 		{
 			b =	b/2;
 			for(j=0;j<b;j++) { printf(" "); }
-			printf("[%d]", queue[i]); i++; 
+			if(queue[i] == 0) printf("[nill]"); 
+			else printf("[%d]", queue[i]); i++;
 		}
 		while(i < temp)	// Skriver ut resterande värden på raden
 		{ 
 			b = (b + (bs/temp));
 			for(j=0;j<=b;j++) { printf(" "); }
-			printf("[%d]", queue[i]); i++; 
+			if(queue[i] == 0) printf("[nill]"); 
+			else printf("[%d]", queue[i]); i++;
 		}
 		printf("\n");
 		temp = temp*2;
 		k++;
-	}
-	
+	}	
 }
 
 /****************************************************************************/
-/* display the tree (pre-order)                                             */
+/* display the tree (pre-order) T,L,R                                       */
 /****************************************************************************/
 
 static void b_disp_pre(treeref T) { /* TO DO */ }
 
 /****************************************************************************/
-/* display the tree (in-order)                                              */
+/* display the tree (in-order) L,T,R                                        */
 /****************************************************************************/
 
 static void b_disp_in(treeref T) { /* TO DO */ }
 /****************************************************************************/
-/* display the tree (post-order)                                            */
+/* display the tree (post-order) L,R,T                                      */
 /****************************************************************************/
 
 static void b_disp_post(treeref T) { /* TO DO */ }
@@ -271,40 +255,24 @@ static void b_disp_post(treeref T) { /* TO DO */ }
 
 static treeref b_add(treeref T, treeref N) 
 {
-	printf("\n%p\n", T);
-	if(T == (treeref)NULL){ T=N; printf("\n0\n");fflush(stdout); return N; }
+	if(T == (treeref)NULL){ T=N; return N; }
 	else
 	{
-		printf("\n1\n");fflush(stdout);
 		if(get_value(N) > get_value(T) && get_RC(T) != NULLREF)
 		{
-			printf("2\n");fflush(stdout);
-			//T = get_RC(T);
 			b_add(get_RC(T),N);
 		}
 		else if(get_value(N) <= get_value(T) && get_LC(T) != NULLREF)
 		{
-			printf("3\n");fflush(stdout);
-			//T = get_LC(T);
 			b_add(get_LC(T),N);
 		}
 		else
 		{
-			printf("4\n");fflush(stdout);
-			if(get_value(N) <= get_value(T))
-			{
-				printf("4.1\n");fflush(stdout);
-				set_LC(T,N);
-			}
-			else
-			{
-				printf("4.2\n");fflush(stdout);
-				set_RC(T,N);
-			}
-			
+			if(get_value(N) <= get_value(T)) { set_LC(T,N); }
+
+			else { set_RC(T,N);	}
 		}
 	}
-	printf("SLUT\n");fflush(stdout);
 
 	return T;
 }
@@ -315,95 +283,30 @@ static treeref b_add(treeref T, treeref N)
 
 static treeref b_rem(treeref T, int v) 
 {
-	printf("1"); fflush(stdout);
-	if(is_empty(T))	return T; 
-	if(v == get_value(T))
-	{	
-		printf("2"); fflush(stdout);
-		if(pnew != NULLREF)
-			{
-				if(v<pnew)
-				{
-					printf("3"); fflush(stdout);
-					if(get_RC(T) != NULLREF && get_LC(get_RC(T)) != NULLREF)
-					{
-						printf("3.1"); fflush(stdout);
-						treeref i = get_RC(T);
-						while(get_LC(i) != NULLREF)
-						{
-							i = get_LC(i);
-						}
-						set_LC(i, get_LC(T));
-						set_LC(pnew, get_RC(T));
-						printf("3.2"); fflush(stdout);
-					}
-					else
-						printf("3.3"); fflush(stdout);
-						if(get_LC(T) != NULLREF)
-						{
-							set_LC(pnew, get_LC(T));
-						}
-						else	set_LC(pnew, NULLREF);					
-				}
-				else 
-					printf("4"); fflush(stdout);
-					if(get_RC(T) != NULLREF && get_LC(get_RC(T)) != NULLREF)
-					{
-						printf("4.1"); fflush(stdout);
-						treeref i = get_RC(T);
-						while(get_LC(i) != NULLREF)
-						{
-							i = get_LC(i);
-						}
-						set_LC(i, get_LC(T));
-						set_LC(pnew, get_RC(T));
-					}
-					else
-						printf("4.2"); fflush(stdout);
-						if(get_LC(T) != NULLREF)
-						{
-							set_RC(pnew, get_RC(T));
-						}
-						else {set_RC(pnew, NULLREF); printf("4.3"); fflush(stdout);}
-						
-				pnew = NULLREF;
-			}
-		else if(get_RC(T) != NULLREF)
+	// Om värdet är mindre än T och om värdet till vänster finns
+		 if(v<get_value(T)&&get_LC(T)!=NULLREF){ return cons(b_rem(get_LC(T),v),T,get_RC(T)); }
+	else if(v<get_value(T)&&get_LC(T)==NULLREF){ return T; }
+	// Om värdet är större än T och om värdet till höger finns
+	else if(v>get_value(T)&&get_RC(T)!=NULLREF){ return cons(get_LC(T),T,b_rem(get_RC(T),v)); } 
+	else if(v>get_value(T)&&get_RC(T)==NULLREF){ return T; }
+
+	else if(v == get_value(T)) // Om vi är på rätt värde
+	{
+		if(get_LC(T)==NULLREF&&get_RC(T)==NULLREF) return NULLREF;
+		else if(get_LC(T) != NULLREF && get_RC(T)==NULLREF) return get_LC(T); // Om det endast finns barn till vänster
+		else if(get_RC(T) != NULLREF && get_LC(T)==NULLREF) return get_RC(T); // Om det endast finns barn till höger
+		else //Om det finns barn på båda sidorna
 		{
-			printf("5"); fflush(stdout);
-			//treeref F = get_RC(T);
-
-			printf("5.0"); fflush(stdout);
-
 			if(get_LC(get_RC(T)) != NULLREF)
-			{
-				printf("5.1"); fflush(stdout);
-				treeref i = get_RC(T);
-				while(get_LC(i) != NULLREF)
-				{
-					i = get_LC(i);
-				}
-
+			{	
+				treeref i = get_LC(get_RC(T));
+				while(get_LC(i) != NULLREF){ i = get_LC(i); }
 				set_LC(i, get_LC(T));
 			}
-			else
-			{
-				printf("5.2"); fflush(stdout);
-				set_LC(get_RC(T), get_LC(T));
-			}
-			pnew = NULLREF;
-			printf("5.3"); fflush(stdout);
-
+			else{ set_LC(get_RC(T), get_LC(T)); }
+			return get_RC(T);
 		}
-		else
-		{
-			T= NULLREF;
-			printf("5.4"); fflush(stdout);
-		}
-		printf("6"); fflush(stdout);
 	}
-	if(v < get_value(T)){	pnew = T; printf("7"); fflush(stdout);	return b_rem(get_LC(T), v);	}
-	if(v > get_value(T)){	pnew = T; printf("8"); fflush(stdout);	return b_rem(get_RC(T), v);	}
 }
 
 /****************************************************************************/
@@ -428,44 +331,13 @@ static treeref b_remh(int v) { /* TO DO */ return NULL; }
 /* FIND an element in the BST (Binary Search Tree)                          */
 /****************************************************************************/
 
-static int b_findb(treeref T, int v) {
-	
+static int b_findb(treeref T, int v) 
+{
 	return 	is_empty(T)			?	NULL
 		:	get_value(T)==v 	?	T
 		:	get_value(T)<v 		?	b_findb(get_RC(T), v)
 		:							b_findb(get_LC(T), v);
-
-
-
-	/*if(T==V){
-	printf("Node [%d] found, on height: %d.",v ,get_height(T));
-}else{
-	if (T < v)
-	{
-		if (get_RC(T) != NULLREF)
-		{
-			T = get_RC(T);
-			b_findb(T, v);
-		}
-		else{
-			printf("Node not found\n");
-		}
-	}
-	if (T > v)
-	{
-		if (get_LC(T) != NULLREF)
-		{
-			T = get_LC(T);
-			b_findb(T, v);
-		}
-		else{
-			printf("Node not found\n");
-		}
-	}
-
-	}
-	
- return 0;*/ }
+ }
 
 /****************************************************************************/
 /* FIND an element in the complete tree                                     */
