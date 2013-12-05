@@ -45,6 +45,7 @@ static treeref pnew  = NULLREF;
 /* define heap array instance                                 */
 /**************************************************************/
 
+static int numels = 0; // Number of elements
 static int first=NILL,  last=NILL;
 static int qfirst=NILL, qlast=NILL;
 
@@ -95,6 +96,7 @@ static treeref create_node(int v)
 	set_LC(new, NULLREF);
 	set_height(new, NULLREF);
 
+	numels++;
 	return new; 
 }
 
@@ -236,18 +238,42 @@ static void b_disp_2D()
 /* display the tree (pre-order) T,L,R                                       */
 /****************************************************************************/
 
-static void b_disp_pre(treeref T) { /* TO DO */ }
+static void b_disp_pre(treeref T) 
+{
+	if(T != NULLREF) 
+	{
+		printf("%d, ", get_value(T));
+        b_disp_pre(get_LC(T));
+        b_disp_pre(get_RC(T));
+	}
+}
 
 /****************************************************************************/
 /* display the tree (in-order) L,T,R                                        */
 /****************************************************************************/
 
-static void b_disp_in(treeref T) { /* TO DO */ }
+static void b_disp_in(treeref T) 
+{
+	if(T != NULLREF) 
+	{
+        b_disp_in(get_LC(T));
+        printf("%d, ", get_value(T));
+        b_disp_in(get_RC(T));
+	}
+}
 /****************************************************************************/
 /* display the tree (post-order) L,R,T                                      */
 /****************************************************************************/
 
-static void b_disp_post(treeref T) { /* TO DO */ }
+static void b_disp_post(treeref T) 
+{
+	if(T != NULLREF) 
+	{
+        b_disp_post(get_LC(T));
+        b_disp_post(get_RC(T));
+        printf("%d, ", get_value(T));
+	}
+}
 
 /****************************************************************************/
 /* ADD to the tree in BST order                                             */
@@ -292,6 +318,7 @@ static treeref b_rem(treeref T, int v)
 
 	else if(v == get_value(T)) // Om vi är på rätt värde
 	{
+		numels--;
 		if(get_LC(T)==NULLREF&&get_RC(T)==NULLREF) return NULLREF;
 		else if(get_LC(T) != NULLREF && get_RC(T)==NULLREF) return get_LC(T); // Om det endast finns barn till vänster
 		else if(get_RC(T) != NULLREF && get_LC(T)==NULLREF) return get_RC(T); // Om det endast finns barn till höger
@@ -349,7 +376,7 @@ static int b_findc(treeref T, int v) { /* TO DO */ return 0; }
 /* FIND the number of element in the tree (cardinality)                     */
 /****************************************************************************/
 
-static int b_card(treeref T) { return 0; /* TO DO */ return 0; }
+static int b_card(treeref T) { return numels; }
 
 
 /****************************************************************************/
