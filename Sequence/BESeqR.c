@@ -137,12 +137,6 @@ static listref b_add(int v, listref L)
       :  is_empty(get_tail(L))      ? cons(L, create_e(v))                    //last
       :  v < get_value(get_tail(L)) ? cons(L, cons(create_e(v), get_tail(L))) //middle
       :                               cons(L, b_add(v, get_tail(L)));         //jump to next
-
-  /*if(is_empty(L)) return create_e(v); // Första elementet skapas
-  else if(v < get_value(L)){ return cons(create_e(v), L); } // Första värdet
-  else if(get_tail(L) == NULLREF){ return cons(L, create_e(v));} // Sista värdet
-  else if(v < get_value(get_tail(L))){ return cons(L, cons(create_e(v), get_tail(L))); } // Mellan två tal
-  else return cons(L, b_add(v, get_tail(L))); // Hoppa till nästa plats*/
 }
 
 /****************************************************************************/
