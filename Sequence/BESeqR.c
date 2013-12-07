@@ -1,4 +1,3 @@
-
 /**************************************************************/
 /* DSA list program example                                   */
 /**************************************************************/
@@ -35,6 +34,7 @@ typedef struct listelem {
 
 static listref L     = (listref) NULL;
 static listref C     = (listref) NULL;
+static listref pcurr = (listref) NULL;
 
 /****************************************************************************/
 /****************************************************************************/
@@ -53,13 +53,13 @@ static listref C     = (listref) NULL;
 /* create_e:        int           --> listref                               */
 /****************************************************************************/
 
-static int      is_empty(listref L)             { return (L==NULLREF) ? 1:0; }
+static int      is_empty(listref L)             { return L == NULLREF; }
 
-static int      get_value(listref E)            { return (*E).value; }
-static listref  get_tail(listref E)             { return (*E).tail; }
+static int      get_value(listref E)            { return E->value; }
+static listref  get_tail(listref E)             { return E->tail;  }
 
-static listref  set_value(listref E, int v)     { return (*E).value = v }
-static listref  set_tail(listref E, listref t)  { return (*E).tail = t }
+static listref  set_value(listref E, int v)     { E->value = v; return E; }
+static listref  set_tail(listref E, listref t)  { E->tail = t;  return E; }
 
 /****************************************************************************/
 /* create and initialise an element in the list                             */
@@ -67,12 +67,12 @@ static listref  set_tail(listref E, listref t)  { return (*E).tail = t }
 
 static listref create_e(int v)
 {
-  listelem *new = malloc(sizeof(listelem));
-  
-  set_value(new,v);
-  set_tail(new,NULLREF);
+  listelem *mem = malloc(sizeof(listelem));
 
-  return new;
+    set_value(mem, v);
+    set_tail(mem, NULLREF);
+  
+  return mem; 
 }
 
 /****************************************************************************/
@@ -112,7 +112,7 @@ static listref tail(listref L)     { return NULLREF; /* TO DO */  }
 /* CONStruct a new list with the element at the head of the list            */
 /****************************************************************************/
 
-static listref cons(listref e, listref L) { set_tail(e, L); return e; }
+static listref cons(listref e, listref L) { return set_tail(e,L); }
 
 /****************************************************************************/
 /* display the list                                                         */
@@ -121,9 +121,8 @@ static listref cons(listref e, listref L) { set_tail(e, L); return e; }
 
 static void b_disp(listref L) 
 {
-  if(!is_empty(L)) { print_el(get_value(L)); b_disp(get_tail(L)); }
-  
-  else { print_eol(); } 
+  if(!is_empty(L)){ print_el(get_value(L)); b_disp(get_tail(L)); } 
+  else print_eol();
 }
 
 /****************************************************************************/
@@ -133,15 +132,17 @@ static void b_disp(listref L)
 
 static listref b_add(int v, listref L)
 {
-    if(is_empty(L)) { printf("skapar första elementet"); return create_e(v); }
+  return is_empty(L)                ? create_e(v)                             //create first
+      :  v < get_value(L)           ? cons(create_e(v), L)                    //first
+      :  is_empty(get_tail(L))      ? cons(L, create_e(v))                    //last
+      :  v < get_value(get_tail(L)) ? cons(L, cons(create_e(v), get_tail(L))) //middle
+      :                               cons(L, b_add(v, get_tail(L)));         //jump to next
 
-    else if(get_value(get_tail(L))>v) { return cons(L,cons(create_e(v),get_tail(L))); } // Mellan
-
-    else if(get_value(L)>v) { return cons(create_e(v),L); } // Först
-    
-    else if(get_tail(L)==NULLREF) { return cons(L,create_e(v)); } // Sist
-    
-    else { return cons(L,b_add(v,get_tail(L))); }
+  /*if(is_empty(L)) return create_e(v); // Första elementet skapas
+  else if(v < get_value(L)){ return cons(create_e(v), L); } // Första värdet
+  else if(get_tail(L) == NULLREF){ return cons(L, create_e(v));} // Sista värdet
+  else if(v < get_value(get_tail(L))){ return cons(L, cons(create_e(v), get_tail(L))); } // Mellan två tal
+  else return cons(L, b_add(v, get_tail(L))); // Hoppa till nästa plats*/
 }
 
 /****************************************************************************/
@@ -159,7 +160,8 @@ static listref b_add(int v, listref L)
 
 static listref b_addpos(int v, listref L, int pos)
 {
-   return NULLREF; /* TO DO */
+  return pos == 1   ?   cons(create_e(v), L)
+      :                 cons(L,b_addpos(v,get_tail(L),pos-1));  
 }
 
 /****************************************************************************/
@@ -170,9 +172,11 @@ static listref b_addpos(int v, listref L, int pos)
 /* e.g. b_rem(4) on list (1, 2, 5, 7, 9) gives Error: value not in list     */
 /****************************************************************************/
 
-static listref b_rem(int v, listref L) {
-
-    return NULLREF; /* TO DO */
+static listref b_rem(int v, listref L) 
+{
+  return  is_empty(L)       ?  L
+      :   v == get_value(L) ?  get_tail(L)
+      :                        cons(L,b_rem(v,get_tail(L)));  
 }
 
 /****************************************************************************/
@@ -184,9 +188,10 @@ static listref b_rem(int v, listref L) {
 /* e.g. b_rempos(6) on (1, 3, 5, 7, 9) gives Error: invalid position        */
 /****************************************************************************/
 
-static listref b_rempos(listref L, int pos) {
-
-   return NULLREF; /* TO DO */
+static listref b_rempos(listref L, int pos) 
+{
+  return  pos == 1  ?   get_tail(L)
+      :                 cons(L, b_rempos(get_tail(L), pos-1));
 }
 
 /****************************************************************************/
@@ -197,9 +202,11 @@ static listref b_rempos(listref L, int pos) {
 /* e.g. b_find(5) in (1, 3, 4, 6) return NULLREF                            */
 /****************************************************************************/
 
-static listref b_find(int v, listref L) {
-
-   return NULLREF; /* TO DO */
+static listref b_find(int v, listref L) 
+{
+  return  is_empty(L)       ?  L
+      :   v == get_value(L) ?  L
+      :                        b_find(v, get_tail(L));  
 }
 
 /****************************************************************************/
@@ -208,7 +215,12 @@ static listref b_find(int v, listref L) {
 /* e.g. empty list ()         b_card returns 0                              */
 /****************************************************************************/
 
-static int b_card(listref L) { return 0; /* TO DO */  }
+static int b_card(listref L) 
+{
+  return  is_empty(L)           ?   0
+      :   is_empty(get_tail(L)) ?   1
+      :                             1 + b_card(get_tail(L));
+}
 
 /****************************************************************************/
 /* navigation & display functions                                           */
@@ -225,14 +237,14 @@ static int b_card(listref L) { return 0; /* TO DO */  }
 /* e.g. if pcurr != NULLREF return TRUE                                     */
 /****************************************************************************/
 
-static void b_first()     { /* TO DO */  }
-static void b_next()      { /* TO DO */  }
+static void b_first()         { pcurr = L; }
+static void b_next()          { pcurr = get_tail(pcurr); }
 
-static void b_disp_C() {
-   /* TO DO */ 
-   }
-   
-static int b_exist_e()  { return 0; /* TO DO */  }
+static void b_disp_C()        { if(!is_empty(pcurr)) printf("-%d-", get_value(pcurr));
+                                else                 printf("Error: invalid element"); }
+           
+static int b_exist_e()        { return  is_empty(pcurr)   ?   0
+                                    :                         1; }
 
 /****************************************************************************/
 /****************************************************************************/
@@ -253,7 +265,7 @@ int cardinality()             { return b_card(L); }
 
 void bfirst()                 { b_first();   }
 void bnext()                  { b_next();    }
-void disp_C()                 { b_disp_C();  }
+void disp_C()                 { b_disp_C(L);  }
 int  exist_e()                { return b_exist_e(); }
 
 /****************************************************************************/
