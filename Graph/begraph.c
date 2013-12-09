@@ -72,10 +72,10 @@ static int      get_ninfo(noderef N)            { return N->ninfo; }
 static noderef  get_edges(noderef N)            { return N->edges; }
 static noderef  get_nodes(noderef N)            { return N->nodes; }
 
-static noderef  set_nname(noderef N, char c)    { N->nname = c return N; }
-static noderef  set_ninfo(noderef N, int v)     { N->ninfo = v return N; }
-static noderef  set_edges(noderef N, noderef E) { N->edges = E return N; }
-static noderef  set_nodes(noderef N, noderef M) { N->nodes = M return N; }
+static noderef  set_nname(noderef N, char c)    { N->nname = c; return N; }
+static noderef  set_ninfo(noderef N, int v)     { N->ninfo = v; return N; }
+static noderef  set_edges(noderef N, noderef E) { N->edges = E; return N; }
+static noderef  set_nodes(noderef N, noderef M) { N->nodes = M; return N; }
 
 /****************************************************************************/
 /* create and initialise an element in the node                             */
@@ -164,24 +164,22 @@ static void b_ndisp(noderef G)
 
 static noderef b_addn(char c, noderef G) 
 {
-  return is_empty(G)                  ? create_n(c, 0)  // empty
-      :  c < get_nname(G)             ? ncons(create_n(c, 0), G)  // first
-      :  is_empty(get_nodes(G))       ? ncons(G, create_n(c, 0))  // last
-      :  c < get_nname(get_nodes(G))  ? ncons(G, ncons(create_n(c, 0), get_nodes(G))) // middle
-      :                                 ncons(G, b_addn(c, get_nodes(G)));  // jump to next
+  return is_empty(G)                  ?  create_n(c, 0)
+      :  c > get_nname(G)             ?  ncons(G, b_addn(c, get_nodes(G)))
+      :                                  ncons(create_n(c, 0), G);
 }
 
 /****************************************************************************/
 /* ADD to the edge in ascending order                                       */
 /****************************************************************************/
 
+
 static noderef b_adde(char c, int w, noderef E) 
 {
-  return is_empty(G)                  ? create_n(c, w)  // empty
-      :  c < get_nname(G)             ? econs(create_n(c, w), G)  // first
-      :  is_empty(get_edges(G))       ? econs(G, create_n(c, w))  // last
-      :  c < get_nname(get_edges(G))  ? econs(G, econs(create_n(c, w), get_edges(G))) // middle
-      :                                 econs(G, b_adde(c, get_edges(G)));  // jump to next
+  return is_empty(E)                  ?  create_n(c, w)
+      :  c > get_nname(E)             ?  econs(E, b_adde(c, w, get_edges(E)))
+      :                                  econs(create_n(c, w), E);
+  
 }
 
 /****************************************************************************/
@@ -190,9 +188,9 @@ static noderef b_adde(char c, int w, noderef E)
 
 static noderef b_remn(char c, noderef G) 
 {
-  return is_empty(G)      ? G
-      :  c == get_nname(G) ? get_nodes(G)
-      :                     ncons(G, b_remn(c, get_nodes(G))); 
+  return is_empty(G)                  ?  G
+      :  c == get_nname(G)            ?  get_nodes(G)
+      :                                  ncons(G, b_remn(c, get_nodes(G))); 
 }
 
 /****************************************************************************/
@@ -201,16 +199,19 @@ static noderef b_remn(char c, noderef G)
 
 static noderef b_reme(char c, noderef E) 
 {
-  return is_empty(G)      ? G
-        :  c == get_nname(G) ? get_edges(G)
-        :                     econs(G, b_reme(c, get_edges(G))); 
+  return is_empty(G)                  ?  G
+        :  c == get_nname(G)          ?  get_edges(G)
+        :                                econs(G, b_reme(c, get_edges(G))); 
 }
 
 /****************************************************************************/
 /* REMove all edges for a given node from the graph                         */
 /****************************************************************************/
 
-static void b_remalle(char c, noderef G) { /* TO DO */ }
+static void b_remalle(char c, noderef G) 
+{
+
+}
 
 /****************************************************************************/
 /* FIND a  node in the graph                                                */
@@ -218,9 +219,9 @@ static void b_remalle(char c, noderef G) { /* TO DO */ }
 
 static noderef b_findn(char c, noderef G) 
 {
-  return  is_empty(G)       ?  G
-      :   c == get_nname(G) ?  G
-      :                        b_findn(c, get_nodes(G));
+  return  is_empty(G)                 ?  G
+      :   c == get_nname(G)           ?  G
+      :                                  b_findn(c, get_nodes(G));
 }
 
 /****************************************************************************/
@@ -229,9 +230,9 @@ static noderef b_findn(char c, noderef G)
 
 static noderef b_finde(char c, noderef E) 
 {
-  return  is_empty(G)       ?  G
-      :   c == get_nname(G) ?  G
-      :                        b_finde(c, get_edges(G));
+  return  is_empty(E)                 ?  E
+      :   c == get_nname(E)           ?  E
+      :                                  b_finde(c, get_edges(E));
 }
 
 /****************************************************************************/
@@ -240,9 +241,9 @@ static noderef b_finde(char c, noderef E)
 
 static int b_card(noderef G) 
 {
-  return  is_empty(G)            ?   0
-      :   is_empty(get_nodes(G)) ?   1
-      :                              1 + b_card(get_nodes(G));
+  return  is_empty(G)                 ?  0
+      :   is_empty(get_nodes(G))      ?  1
+      :                                  1 + b_card(get_nodes(G));
 }
 
 /****************************************************************************/
@@ -260,12 +261,27 @@ static int b_card(noderef G)
 /*                              eol                                         */
 /* get_pos("b") will give 1 (and hence AM[0][1] is set to 3 i.e. a-3-b)     */
 /****************************************************************************/
+static int get_posR(char fname, noderef R){
 
-static int get_pos(char fname)  { /* TO DO */ return 0; }
+  return  is_empty(R)                       ? -1
+      :   fname == get_nname(R)             ?  0
+      :   fname == get_nname(get_nodes(R))  ?  1
+      :                                        1 + get_posR(fname, get_nodes(R));
+/*
+if (fname == get_nname(R)){
+  return i;
+}
+else
+{
+  i++
+  return get_posR(fname, get_nodes(R), i);
+}*/
+}
+static int get_pos(char fname){ return get_posR(fname, G); }
 
-/****************************************************************************/
+/***************************************************************************/
 /* Fill in the values in the adjancy matrix from the adjacency list         */
-/* e.g. for an adjacency list:                                              */
+/*e.g. for an adjacency list:                                              */
 /*               (position 0)   a => b(3) -> c(2) eol                       */
 /*               (position 1)   b => a(3) -> c(7) eol                       */
 /*               (position 2)   c => a(2) -> b(7) eol                       */
@@ -278,13 +294,28 @@ static int get_pos(char fname)  { /* TO DO */ return 0; }
 /*                      (index 2)     c |  2       7       0                */
 /****************************************************************************/
 
-static void cre_adjmat(noderef G) {/* TO DO */ }
+static void cre_adjmat(noderef G) 
+{
+  adjmat[][]
+}
 
 /****************************************************************************/
 /* DISPLAY the adjacency matrix                                             */
 /****************************************************************************/
 
-static void b_mdisp(noderef G) {/* TO DO */ }
+static void b_mdisp(noderef T) { 
+  int i, j;
+  for (i = 0; i < MAXNOD; ++i)//loopa igenom rader
+  {
+    printf("\n%c | ", get_nname(T));
+    T = get_nodes(T);
+    for (j = 0; j < MAXNOD; ++j)//loopa igenom kolumner
+    {
+      printf("%d       ", adjmat[i][j]);
+    }
+  }
+
+}
 
 /****************************************************************************/
 /* GRAPH ALGORITHMS                                                         */
