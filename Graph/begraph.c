@@ -153,7 +153,8 @@ static void b_ndisp(noderef G)
 { 
   if(!is_empty(G))
   {
-    printf("%c[%d]\n |\n v\n", get_nname(G), get_ninfo(G)); 
+    printf("%c[%d]\n |\n v\n", get_nname(G), get_ninfo(G));
+    printf("%p\n", get_edges(G)); 
     b_ndisp(get_nodes(G));
   }  
 }
@@ -179,7 +180,6 @@ static noderef b_adde(char c, int w, noderef E)
   return is_empty(E)                  ?  create_n(c, w)
       :  c > get_nname(E)             ?  econs(E, b_adde(c, w, get_edges(E)))
       :                                  econs(create_n(c, w), E);
-  
 }
 
 /****************************************************************************/
@@ -199,18 +199,9 @@ static noderef b_remn(char c, noderef G)
 
 static noderef b_reme(char c, noderef E) 
 {
-  return is_empty(G)                  ?  G
-        :  c == get_nname(G)          ?  get_edges(G)
-        :                                econs(G, b_reme(c, get_edges(G))); 
-}
-
-/****************************************************************************/
-/* REMove all edges for a given node from the graph                         */
-/****************************************************************************/
-
-static void b_remalle(char c, noderef G) 
-{
-
+  return is_empty(E)                  ?  E
+        :  c == get_nname(E)          ?  get_edges(E)
+        :                                econs(E, b_reme(c, get_edges(E))); 
 }
 
 /****************************************************************************/
@@ -222,6 +213,15 @@ static noderef b_findn(char c, noderef G)
   return  is_empty(G)                 ?  G
       :   c == get_nname(G)           ?  G
       :                                  b_findn(c, get_nodes(G));
+}
+
+/****************************************************************************/
+/* REMove all edges for a given node from the graph                         */
+/****************************************************************************/
+
+static void b_remalle(char c, noderef G) 
+{
+  set_edges(b_findn(c, G), NULLREF);
 }
 
 /****************************************************************************/
@@ -263,21 +263,19 @@ static int b_card(noderef G)
 /****************************************************************************/
 static int get_posR(char fname, noderef R){
 
-  return  is_empty(R)                       ? -1
+  return  is_empty(R)                       ?  0
       :   fname == get_nname(R)             ?  0
       :   fname == get_nname(get_nodes(R))  ?  1
       :                                        1 + get_posR(fname, get_nodes(R));
-/*
-if (fname == get_nname(R)){
-  return i;
-}
-else
-{
-  i++
-  return get_posR(fname, get_nodes(R), i);
-}*/
 }
 static int get_pos(char fname){ return get_posR(fname, G); }
+
+static int get_posE(char fname, noderef E){
+  return  is_empty(E)                       ?  0
+      :   fname == get_nname(E)             ?  0
+      :   fname == get_nname(get_edges(E))  ?  1
+      :                                        1 + get_posE(fname, get_edges(E));
+}
 
 /***************************************************************************/
 /* Fill in the values in the adjancy matrix from the adjacency list         */
@@ -293,10 +291,28 @@ static int get_pos(char fname){ return get_posR(fname, G); }
 /*                      (index 1)     b |  3       0       7                */
 /*                      (index 2)     c |  2       7       0                */
 /****************************************************************************/
+static void empty(){
+  int i, j;
+  for(i=0;i<MAXNOD;i++){ for(j=0;j<MAXNOD;j++){ adjmat[i][j] = 0; } } }
 
 static void cre_adjmat(noderef G) 
 {
-  adjmat[][]
+  empty();
+  noderef N = G;
+  noderef E = G;
+  while(!is_empty(N))
+  {
+    if(!is_empty(get_edges(E)))
+    {
+      while (!is_empty(E))
+      {
+        adjmat[get_pos(get_nname(N))][get_posE(get_nname(E), G)] = get_ninfo(E);
+        E = get_edges(E);
+      } 
+    }
+    E = get_nodes(N);
+    N = get_nodes(N);
+  }
 }
 
 /****************************************************************************/
@@ -304,17 +320,17 @@ static void cre_adjmat(noderef G)
 /****************************************************************************/
 
 static void b_mdisp(noderef T) { 
+  cre_adjmat(G);
   int i, j;
-  for (i = 0; i < MAXNOD; ++i)//loopa igenom rader
+  for (i = 0; i < b_card(G); i++)//loopa igenom rader
   {
     printf("\n%c | ", get_nname(T));
     T = get_nodes(T);
-    for (j = 0; j < MAXNOD; ++j)//loopa igenom kolumner
+    for (j = 0; j < b_card(G); j++)//loopa igenom kolumner
     {
       printf("%d       ", adjmat[i][j]);
     }
   }
-
 }
 
 /****************************************************************************/
@@ -349,7 +365,9 @@ void adde(char cs, char cd, int v) {
    }
 
 void reme(char cs, char cd) {
-   set_edges(b_findn(cs, G), b_reme(cd, get_edges(b_findn(cs, G))));
+
+  set_edges(b_findn(cs, G), b_reme(cd, get_edges(b_findn(cs, G))));
+   //set_edges(b_findn(cs, G), b_adde(cd, get_ninfo(b_findn(cd, G)), b_reme(cd, get_edges(b_findn(cs, G)))));
    }
 
 int is_nmember(char c) { return !is_empty(b_findn(c, G)); }
