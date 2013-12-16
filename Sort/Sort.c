@@ -1,3 +1,9 @@
+#include <math.h>
+
+int size;
+int a[size]
+
+
 static void bubble_sort(int a[],int n)
 {
 int i,j,k,temp;
@@ -37,9 +43,9 @@ static void insertion_sort(int a[], int length){
 }
 
 
-static long Partition(long v[], long a, long b)
+static int Partition(int v[], int a, int b)
 {
-long pivot, lower, upper, temp;
+int pivot, lower, upper, temp;
 pivot = v[a];
 lower = a + 1;
 upper = b;
@@ -64,13 +70,64 @@ v[a] = temp;
 return upper;
 }
 
-static void QuickSort(long v[], long a, long b)
+static void QuickSort(int v[], int a, int b)
 {
-long k;
+int k;
 if (a < b)
 {
 k = Partition(v, a, b);
 QuickSort(v, a, k-1);
 QuickSort(v, k+1, b);
 }
+}
+
+
+    struct timeval tv0, tv1;
+    struct timezone tzp;
+    rtn = gettimeofday(&tv0, &tzp); /* set timer T0 */
+    //kalla på funktion
+    rtn = gettimeofday(&tv1, &tzp); /* read time T1 */
+    printf("%d msek\n",difftod(&tv0,&tv1));
+
+static void linear_search(A[], int v, int i){
+       A[i] == NULL               ? NULL
+     : v == A[i]                  ? printf("The value %d is placed on [%d]", v, A[i])
+     :                              b_search(A[],v,++i);
+}
+
+static void binary_search(int array, int key, int first, int last, int middle){
+
+   if ( first > last ){
+      printf("Not found! %d is not present in the list.\n", key);
+      break;
+}
+     if( first <= last )
+   {
+      if ( array[middle] < search )
+         first = middle + 1;    
+      else if ( array[middle] == search ) 
+      {
+         printf("%d found at location %d.\n", key, middle+1);
+         break;
+      }
+      else
+         last = middle - 1;
+ 
+      middle = (first + last)/2;
+   }
+   else{binary_search(array[], key, first, last, middle);}
+
+}
+
+static void random_array(){
+  int i, j;
+for (i = 0; i < size; ++i)
+{
+  srand (time(NULL));
+  a[i] = rand() % 100;
+}
+}
+
+static void set_size(int x){
+  size = x;
 }
