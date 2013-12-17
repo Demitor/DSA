@@ -1,11 +1,12 @@
 #include <math.h>
 #include <stdio.h>
 #include <malloc.h>
+#include <stdlib.h>
 #define size 1024
 int a[size]
 
 
-static void bubble_sort(int n)
+static void bubble_sort(int a[])
 {
 int i,j,k,temp;
   /* printf("\nUnsorted Data:");
@@ -26,7 +27,7 @@ int i,j,k,temp;
     }
 }
 
-static void insertion_sort(){
+static void insertion_sort(int a[], int size){
 
   for(i=1;i<size;i++){
       temp=a[i];
@@ -71,7 +72,7 @@ a[a] = temp;
 return upper;
 }
 
-static void QuickSort(int c, int b)
+static void QuickSort(int a[], int c, int b)
 {
 int k;
 if (c < b)
@@ -90,10 +91,10 @@ QuickSort(k+1, b);
     /*rtn = gettimeofday(&tv1, &tzp);*/ /* read time T1 */
     /*printf("%d msek\n",difftod(&tv0,&tv1));*/
 
-static void linear_search(int v, int i){
+static void linear_search(int a[], int v, int i){
        a[i] == NULL               ? NULL
      : v == a[i]                  ? printf("The value %d is placed on [%d]", v, a[i])
-     :                              b_search(v,++i);
+     :                              b_search(v,++i);//VAFAN HAR DU GJORT HÄR PAYNE?!?!?!?!?!
 }
 
 static void binary_search(int key, int first, int last, int middle){
@@ -120,7 +121,7 @@ static void binary_search(int key, int first, int last, int middle){
 
 }
 
-static void random_array(){
+static void random_array(int a[]){
   int i, j;
 for (i = 0; i < size; ++i)
 {
@@ -129,10 +130,21 @@ for (i = 0; i < size; ++i)
 }
 }
 
-static void set_size(){
- /*printf("Set x, where 2^x\n");
- scanf("%i", &size);
- int* a = (int*)realloc(sizeof(int)*size);
- free((void*)a);*/
 
+ static void worst_array(int array[], int size){
+  int i, j = size;
+  for (i = 0; i < size; ++i)
+  {
+    array[i] = j;
+    j--;
+  }
+
+ }
+
+ static void print_array(int array[], int size){
+  int i = 0;
+  while(i < size){
+    printf("%d\n", array[i]);
+    i++;
+  }
  }
