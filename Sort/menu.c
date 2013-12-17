@@ -4,7 +4,7 @@
 
 static void disp_menu(){
 	printf("************************************************************\n");
-	printf("*** Welcome to algorithms efficiency testing             ***\n");
+	printf("*** Welcome to the algorithm efficiency test             ***\n");
 	printf("*** 1  : Bubble Sort                                     ***\n");
 	printf("*** 2  : Insertion Sort                                  ***\n");
 	printf("*** 3  : Quicksort                                       ***\n");

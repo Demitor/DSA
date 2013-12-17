@@ -1,10 +1,11 @@
 #include <math.h>
-
-int size;
+#include <stdio.h>
+#include <malloc.h>
+#define size 1024
 int a[size]
 
 
-static void bubble_sort(int a[],int n)
+static void bubble_sort(int n)
 {
 int i,j,k,temp;
   /* printf("\nUnsorted Data:");
@@ -25,9 +26,9 @@ int i,j,k,temp;
     }
 }
 
-static void insertion_sort(int a[], int length){
+static void insertion_sort(){
 
-  for(i=1;i<length;i++){
+  for(i=1;i<size;i++){
       temp=a[i];
       j=i-1;
       while((temp<a[j])&&(j>=0)){
@@ -43,59 +44,59 @@ static void insertion_sort(int a[], int length){
 }
 
 
-static int Partition(int v[], int a, int b)
+static int Partition(int a, int b)
 {
 int pivot, lower, upper, temp;
-pivot = v[a];
+pivot = a[a];
 lower = a + 1;
 upper = b;
 do
 {
-while (v[lower] <= pivot && lower <= upper)
+while (a[lower] <= pivot && lower <= upper)
 lower = lower + 1;
-while (v[upper] > pivot && lower <= upper)
+while (a[upper] > pivot && lower <= upper)
 upper = upper - 1;
 if (lower <= upper)
 {
-temp = v[lower];
-v[lower] = v[upper];
-v[upper] = temp;
+temp = a[lower];
+a[lower] = a[upper];
+a[upper] = temp;
 lower = lower + 1;
 upper = upper - 1;
 }
 }while (lower <= upper);
 temp = v[upper];
-v[upper] = v[a];
-v[a] = temp;
+a[upper] = a[a];
+a[a] = temp;
 return upper;
 }
 
-static void QuickSort(int v[], int a, int b)
+static void QuickSort(int c, int b)
 {
 int k;
-if (a < b)
+if (c < b)
 {
-k = Partition(v, a, b);
-QuickSort(v, a, k-1);
-QuickSort(v, k+1, b);
+k = Partition(c, b);
+QuickSort(c, k-1);
+QuickSort(k+1, b);
 }
 }
 
 
-    struct timeval tv0, tv1;
+  /*  struct timeval tv0, tv1;
     struct timezone tzp;
     rtn = gettimeofday(&tv0, &tzp); /* set timer T0 */
     //kalla på funktion
-    rtn = gettimeofday(&tv1, &tzp); /* read time T1 */
-    printf("%d msek\n",difftod(&tv0,&tv1));
+    /*rtn = gettimeofday(&tv1, &tzp);*/ /* read time T1 */
+    /*printf("%d msek\n",difftod(&tv0,&tv1));*/
 
-static void linear_search(A[], int v, int i){
-       A[i] == NULL               ? NULL
-     : v == A[i]                  ? printf("The value %d is placed on [%d]", v, A[i])
-     :                              b_search(A[],v,++i);
+static void linear_search(int v, int i){
+       a[i] == NULL               ? NULL
+     : v == a[i]                  ? printf("The value %d is placed on [%d]", v, a[i])
+     :                              b_search(v,++i);
 }
 
-static void binary_search(int array, int key, int first, int last, int middle){
+static void binary_search(int key, int first, int last, int middle){
 
    if ( first > last ){
       printf("Not found! %d is not present in the list.\n", key);
@@ -103,9 +104,9 @@ static void binary_search(int array, int key, int first, int last, int middle){
 }
      if( first <= last )
    {
-      if ( array[middle] < search )
+      if ( a[middle] < search )
          first = middle + 1;    
-      else if ( array[middle] == search ) 
+      else if ( a[middle] == search ) 
       {
          printf("%d found at location %d.\n", key, middle+1);
          break;
@@ -115,7 +116,7 @@ static void binary_search(int array, int key, int first, int last, int middle){
  
       middle = (first + last)/2;
    }
-   else{binary_search(array[], key, first, last, middle);}
+   else{binary_search(a[], key, first, last, middle);}
 
 }
 
@@ -128,6 +129,10 @@ for (i = 0; i < size; ++i)
 }
 }
 
-static void set_size(int x){
-  size = x;
-}
+static void set_size(){
+ /*printf("Set x, where 2^x\n");
+ scanf("%i", &size);
+ int* a = (int*)realloc(sizeof(int)*size);
+ free((void*)a);*/
+
+ }
