@@ -1,12 +1,20 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <sys/time.h>
 #include "Sort.h"
 #include "betree.h"
-#include <stdio.h>
-#include <sys/time.h>
+
 	int *array = NULL, is_created = 0, arr_size;
 	struct timeval tv0, tv1;
     struct timezone tzp;
     char menu = 'A';
-    int c = -1;
+    int c = -1, rtn;
+    int v;
+
+int difftod(struct timeval * tv0, struct timeval * tv1){
+	return (tv1->tv_sec - tv0->tv_sec)*1000 + (tv1->tv_usec- tv0->tv_usec)/1000;
+}
 static void disp_menu_a(){
 	printf("\n************************************************************\n");
 	printf("*** Welcome to the algorithm efficiency test             ***\n");
@@ -33,17 +41,17 @@ static void disp_menu_b(){
 	printf("***                                                      ***\n");
 	printf("************************************************************\n");
 }
-static int set_size(){
+static void set_size(){
 	free(array);
 	arr_size = 0;
     printf("Set x, where 2^x\n");
-    scanf("%d",&arraysize);
-    arr_size = (int) pow((double)2,(double)arraysize);
-    array = malloc(sizeof(int)*arraysize);
+    scanf("%d",&arr_size);
+    arr_size = (int) pow((double)2,(double)arr_size);
+    array = malloc(sizeof(int)*arr_size);
     is_created++;
 }
 
-int int main(int argc, char const *argv[])
+int main(int argc, char const *argv[])
 {
 
     disp_menu_a();
@@ -56,7 +64,7 @@ int int main(int argc, char const *argv[])
 		case 1: //done
 		if(is_created != 0){
     rtn = gettimeofday(&tv0, &tzp); /* set timer T0 */
-		bubble_sort(array);
+		bubble_sort(array, arr_size);
     rtn = gettimeofday(&tv1, &tzp); /* read time T1 */
     printf("%d msek\n",difftod(&tv0,&tv1));
 		}
@@ -82,8 +90,11 @@ int int main(int argc, char const *argv[])
 		break;
 		case 4: //done
 		if(is_created != 0){
+			int j;
+			printf("What number would you like to search for?\n");
+			scanf("%d", &j);
 	rtn = gettimeofday(&tv0, &tzp); /* set timer T0 */
-		linear_search(array, /*värdet vi vill leta efter*/, 0);
+		linear_search(array, j, 0);
     rtn = gettimeofday(&tv1, &tzp); /* read time T1 */
     printf("%d msek\n",difftod(&tv0,&tv1));
     }
@@ -91,8 +102,12 @@ int int main(int argc, char const *argv[])
 		break;
 		case 5://done
 		if(is_created != 0){
+			int key, half;
+			half = (arr_size/2);
+			printf("What number would you like to search for?\n");
+			scanf("%d", &key);
 	rtn = gettimeofday(&tv0, &tzp); /* set timer T0 */
-		binary_search();//INPARAMETRAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		binary_search(array, key, 0, arr_size, half);
     rtn = gettimeofday(&tv1, &tzp); /* read time T1 */
     printf("%d msek\n",difftod(&tv0,&tv1));
     }
@@ -103,7 +118,7 @@ int int main(int argc, char const *argv[])
 		disp_menu_b();
 		break;
 		case 7: //done
-		random_array(array);
+		random_array(array, arr_size);
 		break;
 		case 8: //done
 		worst_array(array, arr_size);
@@ -117,7 +132,7 @@ int int main(int argc, char const *argv[])
 		set_size();
 		break;
 		case 11: //done
-		disp_menu();
+		disp_menu_a();
 		break;
 		case 0:
 		c = 0;
@@ -130,11 +145,10 @@ int int main(int argc, char const *argv[])
 	else if (menu == 'B')
 	{
 		disp_menu_b();
-		switch(c)
+		switch(c){
 		case 1: add_r_tree();
 		break;
 		case 2:
-		int v;
 		printf("What number would you like to search for?\n");
 		scanf("%d", &v);
 		rtn = gettimeofday(&tv0, &tzp); /* set timer T0 */
@@ -148,6 +162,7 @@ int int main(int argc, char const *argv[])
 		default:
 		printf("Invalid Parameter!\n");
 		break;
+	}
 	}
 	else {printf("Oops, something went wrong!\n");}
 }while(c != 0);

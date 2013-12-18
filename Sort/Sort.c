@@ -1,21 +1,20 @@
 #include <math.h>
 #include <stdio.h>
 #include <malloc.h>
-#include "betree.h"
 #include <stdlib.h>
-#define size 1024
-int a[size]
+#include "betree.h"
+//#define size 1024
 
 
-static void bubble_sort(int a[])
+static void bubble_sort(int a[], int size)
 {
 int i,j,k,temp;
   /* printf("\nUnsorted Data:");
     for(k=0;k<n;k++)
          printf("%5d",a[k]);*/
-    for(i=1;i< n;i++)
+    for(i=1;i< size;i++)
     {
-         for(j=0;j< n-1;j++)
+         for(j=0;j< size-1;j++)
          if(a[j]>a[j+1])
                {
                temp=a[j];
@@ -29,7 +28,7 @@ int i,j,k,temp;
 }
 
 static void insertion_sort(int a[], int size){
-
+  int i, temp, j;
   for(i=1;i<size;i++){
       temp=a[i];
       j=i-1;
@@ -46,11 +45,11 @@ static void insertion_sort(int a[], int size){
 }
 
 
-static int Partition(int a, int b)
+static int Partition(int a[], int c, int b)
 {
 int pivot, lower, upper, temp;
-pivot = a[a];
-lower = a + 1;
+pivot = a[c];
+lower = c + 1;
 upper = b;
 do
 {
@@ -67,9 +66,9 @@ lower = lower + 1;
 upper = upper - 1;
 }
 }while (lower <= upper);
-temp = v[upper];
-a[upper] = a[a];
-a[a] = temp;
+temp = a[upper];
+a[upper] = a[c];
+a[c] = temp;
 return upper;
 }
 
@@ -78,52 +77,43 @@ static void QuickSort(int a[], int c, int b)
 int k;
 if (c < b)
 {
-k = Partition(c, b);
-QuickSort(c, k-1);
-QuickSort(k+1, b);
+k = Partition(a, c, b);
+QuickSort(a, c, k-1);
+QuickSort(a, k+1, b);
 }
 }
 
-
-  /*  struct timeval tv0, tv1;
-    struct timezone tzp;
-    rtn = gettimeofday(&tv0, &tzp); /* set timer T0 */
-    //kalla på funktion
-    /*rtn = gettimeofday(&tv1, &tzp);*/ /* read time T1 */
-    /*printf("%d msek\n",difftod(&tv0,&tv1));*/
 
 static void linear_search(int a[], int v, int i){
        a[i] == NULL               ? NULL
      : v == a[i]                  ? printf("The value %d is placed on [%d]", v, a[i])
-     :                              linear_search(int a[] ,v,++i);
+     :                              linear_search(a ,v,++i);
 }
 
-static void binary_search(int key, int first, int last, int middle){
+static void binary_search(int a[], int key, int first, int last, int middle){
 
    if ( first > last ){
       printf("Not found! %d is not present in the list.\n", key);
-      break;
 }
      if( first <= last )
    {
-      if ( a[middle] < search )
+      if ( a[middle] < key )
          first = middle + 1;    
-      else if ( a[middle] == search ) 
+      else if ( a[middle] == key ) 
       {
          printf("%d found at location %d.\n", key, middle+1);
-         break;
       }
       else
          last = middle - 1;
  
       middle = (first + last)/2;
    }
-   else{binary_search(a[], key, first, last, middle);}
+   else{binary_search(a, key, first, last, middle);}
 
 }
 
-static void random_array(int a[]){
-  int i, j;
+static void random_array(int a[], int size){
+  int i;
 for (i = 0; i < size; ++i)
 {
   srand (time(NULL));
@@ -155,7 +145,7 @@ for (i = 0; i < size; ++i)
   printf("Set x, where 2^x\n");
   scanf("%d", &size);
   size = (int) pow((double)(sizeof(int)*3),(double)size);
-  for (int i = 0; i < size; ++i)
+  for (i = 0; i < size; ++i)
   {
     srand (time(NULL));
     v = rand() % 100 + 1;
