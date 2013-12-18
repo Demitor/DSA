@@ -5,8 +5,8 @@
 	struct timeval tv0, tv1;
     struct timezone tzp;
     int c = -1;
-static void disp_menu(){
-	printf("************************************************************\n");
+static void disp_menu_a(){
+	printf("\n************************************************************\n");
 	printf("*** Welcome to the algorithm efficiency test             ***\n");
 	printf("*** 1  : Bubble Sort                                     ***\n");
 	printf("*** 2  : Insertion Sort                                  ***\n");
@@ -22,6 +22,7 @@ static void disp_menu(){
 	printf("*** 0  : Exit                                            ***\n");
 	printf("************************************************************\n");
 }
+ 
 static int set_size(){
 	free(array);
 	arr_size = 0;
@@ -35,7 +36,7 @@ static int set_size(){
 int int main(int argc, char const *argv[])
 {
 
-    disp_menu();
+    disp_menu_a();
     do{
     scanf("%d", &c);
 	switch(c){
@@ -78,7 +79,7 @@ int int main(int argc, char const *argv[])
 		case 5://done
 		if(is_created != 0){
 	rtn = gettimeofday(&tv0, &tzp); /* set timer T0 */
-		binary_search();
+		binary_search();//INPARAMETRAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     rtn = gettimeofday(&tv1, &tzp); /* read time T1 */
     printf("%d msek\n",difftod(&tv0,&tv1));
     }
@@ -100,7 +101,9 @@ int int main(int argc, char const *argv[])
 		worst_array(array, arr_size);
 		break;
 		case 9: // done
+		if(is_created != 0){
 		print_array(array, arr_size);
+	}else{printf("The Array is Empty!\n");}
 		break;
 		case 10: //done
 		set_size();

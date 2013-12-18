@@ -94,7 +94,7 @@ QuickSort(k+1, b);
 static void linear_search(int a[], int v, int i){
        a[i] == NULL               ? NULL
      : v == a[i]                  ? printf("The value %d is placed on [%d]", v, a[i])
-     :                              b_search(v,++i);//VAFAN HAR DU GJORT HÄR PAYNE?!?!?!?!?!
+     :                              linear_search(int a[] ,v,++i);
 }
 
 static void binary_search(int key, int first, int last, int middle){
