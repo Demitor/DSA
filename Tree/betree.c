@@ -95,7 +95,6 @@ static treeref create_node(int v)
 	set_RC(new, NULLREF);
 	set_LC(new, NULLREF);
 	set_height(new, NULLREF);
-
 	numels++;
 	return new; 
 }

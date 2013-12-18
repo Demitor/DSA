@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <malloc.h>
+#include "betree.h"
 #include <stdlib.h>
 #define size 1024
 int a[size]
@@ -146,5 +147,18 @@ for (i = 0; i < size; ++i)
   while(i < size){
     printf("%d\n", array[i]);
     i++;
+  }
+ }
+
+ static void add_r_tree(){
+  int i, size, v;
+  printf("Set x, where 2^x\n");
+  scanf("%d", &size);
+  size = (int) pow((double)(sizeof(int)*3),(double)size);
+  for (int i = 0; i < size; ++i)
+  {
+    srand (time(NULL));
+    v = rand() % 100 + 1;
+    add(v);
   }
  }

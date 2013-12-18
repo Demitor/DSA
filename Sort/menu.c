@@ -1,9 +1,11 @@
 #include "Sort.h"
+#include "betree.h"
 #include <stdio.h>
 #include <sys/time.h>
 	int *array = NULL, is_created = 0, arr_size;
 	struct timeval tv0, tv1;
     struct timezone tzp;
+    char menu = 'A';
     int c = -1;
 static void disp_menu_a(){
 	printf("\n************************************************************\n");
@@ -13,7 +15,7 @@ static void disp_menu_a(){
 	printf("*** 3  : Quicksort                                       ***\n");
 	printf("*** 4  : Linear Search                                   ***\n");
 	printf("*** 5  : Binary Search                                   ***\n");
-	printf("*** 6  : Search in Binary Tree (BST)                     ***\n");
+	printf("*** 6  : Switch To Tree Menu                             ***\n");
 	printf("*** 7  : Fill Random Case Array                          ***\n");
 	printf("*** 8  : Fill Worst Case Array                           ***\n");
 	printf("*** 9  : Print Array                                     ***\n");
@@ -22,7 +24,15 @@ static void disp_menu_a(){
 	printf("*** 0  : Exit                                            ***\n");
 	printf("************************************************************\n");
 }
- 
+static void disp_menu_b(){
+	printf("\n************************************************************\n");
+	printf("***                                                      ***\n");
+	printf("*** 1  : Add Value To The Tree                           ***\n");
+	printf("*** 2  : Search For a Value In The Tree                  ***\n");
+	printf("*** 3  : Switch To Array Menu                            ***\n");
+	printf("***                                                      ***\n");
+	printf("************************************************************\n");
+}
 static int set_size(){
 	free(array);
 	arr_size = 0;
@@ -38,6 +48,9 @@ int int main(int argc, char const *argv[])
 
     disp_menu_a();
     do{
+    	if (menu == 'A')
+    	{
+    	
     scanf("%d", &c);
 	switch(c){
 		case 1: //done
@@ -86,13 +99,8 @@ int int main(int argc, char const *argv[])
     else{printf("The Array is not yet created!\n");}
 		break;
 		case 6://inte done
-		if(is_created != 0){
-	rtn = gettimeofday(&tv0, &tzp); /* set timer T0 */
-		BST();
-    rtn = gettimeofday(&tv1, &tzp); /* read time T1 */
-    printf("%d msek\n",difftod(&tv0,&tv1));
-    }
-    else{printf("The Array is not yet created!\n");}
+
+		disp_menu_b();
 		break;
 		case 7: //done
 		random_array(array);
@@ -118,6 +126,30 @@ int int main(int argc, char const *argv[])
 		printf("Invalid Parameter!\n");
 		break;
 	}
+	}
+	else if (menu == 'B')
+	{
+		disp_menu_b();
+		switch(c)
+		case 1: add_r_tree();
+		break;
+		case 2:
+		int v;
+		printf("What number would you like to search for?\n");
+		scanf("%d", &v);
+		rtn = gettimeofday(&tv0, &tzp); /* set timer T0 */
+		is_memberb(v);
+		rtn = gettimeofday(&tv1, &tzp); /* read time T1 */
+		printf("%d msek\n",difftod(&tv0,&tv1));
+		break;
+		case 3:
+		menu = 'A';
+		break;
+		default:
+		printf("Invalid Parameter!\n");
+		break;
+	}
+	else {printf("Oops, something went wrong!\n");}
 }while(c != 0);
 	return 0;
 }
